@@ -471,6 +471,9 @@ local function gatherInput(event)
   -- Get our current transmitter voltage
   currentVoltage = getValue('tx-voltage')
 
+  -- Armed / Disarm / Buzzer switch
+  armed = getValue('sa')
+
   -- Our "mode" switch
   flight_mode = getValue("FM")
 
