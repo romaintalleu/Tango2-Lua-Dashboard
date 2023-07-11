@@ -44,6 +44,7 @@ local lastNumberMessage = "0"
 
 -- Save last known GPS for display if link lost
 local lastGPS = "NA"
+local sats = 0
 
 ------- HELPERS -------
 -- Helper converts voltage to percentage of voltage for a sexy battery percent
@@ -389,16 +390,30 @@ local function drawSendIt(start_x, start_y, rssi_dbm)
 
 end
 
+local function drawSatelliteIcon(start_x, start_y)
+  -- Draw satellite icon
+  lcd.drawLine(start_x + 4, start_y + 4, start_x + 1, start_y + 1, SOLID, FORCE)
+  lcd.drawLine(start_x + 4, start_y + 0, start_x + 0, start_y + 4, SOLID, FORCE)
+  lcd.drawLine(start_x + 4, start_y + 1, start_x + 1, start_y + 4, SOLID, FORCE)
+  lcd.drawLine(start_x + 4, start_y + 2, start_x + 2, start_y + 4, SOLID, FORCE)
+  lcd.drawLine(start_x + 3, start_y + 5, start_x + 5, start_y + 5, SOLID, FORCE)
+end
+
 local function drawGPS(start_x, start_y, coords)
   -- lcd.drawPixMap(start_x, start_y, "/test.bmp")
   lcd.drawText( start_x + 2, start_y + 2, "GPS coordinates", SMLSIZE )
+
   if (type(coords) == "table") then
     local gpsValue = round(coords["lat"],4) .. ", " .. round(coords["lon"],4)
-	lastGPS=gpsValue
-    lcd.drawText(start_x + 5, start_y + 12, gpsValue, SMLSIZE)
+    lastGPS=gpsValue
+    lcd.drawText(start_x + 2, start_y + 12, gpsValue, SMLSIZE)
+
+    drawSatelliteIcon(start_x + 2, start_y + 22)
+    lcd.drawText(start_x + 10, start_y + 22, math.ceil(sats), SMLSIZE)
+
   end
   -- Draw last known gpsValue
-  lcd.drawText(start_x + 5, start_y + 12, lastGPS, SMLSIZE)
+  lcd.drawText(start_x + 2, start_y + 12, lastGPS, SMLSIZE)
 end
 
 local function drawVoltageImage(start_x, start_y)
@@ -460,6 +475,7 @@ local function gatherInput(event)
   rssi_dbm = getValue("TSNR")
   -- Get GPS values
   coords = getValue("GPS")
+  sats = getValue("Sats")
 
   -- Get the seconds left in our timer
   timerLeft = getValue('timer1')
